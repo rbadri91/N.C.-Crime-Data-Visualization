@@ -12,6 +12,8 @@ from sklearn import preprocessing
 from sklearn.cluster import KMeans
 import matplotlib.pylab as plt
 from scipy.spatial.distance import cdist
+import collections
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -86,7 +88,7 @@ clustervar['wser']= preprocessing.scale(clustervar['wser'].astype('float64'))
 clustervar['wmfg']= preprocessing.scale(clustervar['wmfg'].astype('float64'))
 
 clus_train = clustervar
-
+print(clus_train)
 def findSuitableK():
 	clusters=range(1,7) 
 	meandist=[]
@@ -96,12 +98,11 @@ def findSuitableK():
 	    clusassign=model.predict(clus_train)
 	    meandist.append(sum(np.min(cdist(clus_train, model.cluster_centers_, 'euclidean'), axis=1))
 	    / clus_train.shape[0])
-	print(meandist)
 	plt.plot(clusters, meandist)
 	plt.xlabel('Number of clusters')
 	plt.ylabel('Average distance')
 	plt.title('Selecting k with the Elbow Method') # pick the fewest number of clusters that reduces the average distance    
-	plt.show()
+	# plt.show()
 
 findSuitableK()
 
@@ -109,11 +110,42 @@ def createClusters():
 	model=KMeans(n_clusters=3)
 	model.fit(clus_train)
 	clusassign=model.predict(clus_train)
-	print(clusassign)
 	lables = model.labels_
-	print(lables)
+	return lables
 
-createClusters()	
+lables=createClusters()
+
+def groupClusters():
+	my_dict = {}
+	for (ind,elem) in enumerate(lables):
+		if elem in my_dict:
+			my_dict[elem].append(ind)
+		else:
+			my_dict.update({elem:[ind]})
+	return my_dict
+
+cluster_dict=groupClusters()
+
+def sampleClusters():
+	cluster_sample={}
+	df = pd.DataFrame()
+	# # df = pd.DataFrame(index=range(0,13),columns=['county','year','crmrte','prbarr','prbconv','prbpris','avgsen',
+	# 					'density','wcon','wfir','wser','wmfg'], dtype='float64')
+	# df= pd.DataFrame([['county','year','crmrte','prbarr','prbconv','prbpris','avgsen',
+	# 					'density','wcon','wfir','wser','wmfg']])
+	
+	count=0;
+	for i in range(0,3):
+		length = len(cluster_dict[i])
+		cluster_sample[i]=random.sample(cluster_dict[i],length//3)
+		for k in cluster_sample[i]:
+			test= clus_train.iloc[[k]]
+			df=df.append(clus_train.iloc[[k]],ignore_index=True)
+			# df.iloc[[count]] = clus_train.iloc[[k]]
+			count =count +1
+	return df
+
+sampled_dataFrame=sampleClusters()
 
 def find_centers(X, K):
 	oldmu = random.sample(testarray, 15)
