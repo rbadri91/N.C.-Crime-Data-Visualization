@@ -14,6 +14,7 @@ import matplotlib.pylab as plt
 from scipy.spatial.distance import cdist
 import collections
 from collections import defaultdict
+from sklearn.decomposition import PCA
 
 app = Flask(__name__)
 
@@ -24,36 +25,14 @@ MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
 DBS_NAME = 'crime'
 COLLECTION_NAME = 'projects'
-FIELDS = {'county': True, 'year': True, 'crmrte': True, 'prbarr': True, 'prbconv': True, 'prbpris': True,'avgsen': True,'density': True,'wcon': True,'wfir': True,'wser': True,'wmfg': True,'_id': False}
-
-
-def cluster_points(X, mu):
-    clusters  = {}
-    for x in X:
-        bestmukey = min([(i[0], np.linalg.norm(x-mu[i[0]])) \
-                    for i in enumerate(mu)], key=lambda t:t[1])[0]
-        try:
-            clusters[bestmukey].append(x)
-        except KeyError:
-            clusters[bestmukey] = [x]
-    return clusters
-
-def reevaluate_centers(mu, clusters):
-    newmu = []
-    keys = sorted(clusters.keys())
-    for k in keys:
-        newmu.append(np.mean(clusters[k], axis = 0))
-    return newmu   
-
-def has_converged(mu, oldmu):
-    return (set([tuple(a) for a in mu]) == set([tuple(a) for a in oldmu]))         	
+FIELDS = {'county': True, 'year': True, 'crmrte': True, 'prbarr': True, 'prbconv': True, 'prbpris': True,'avgsen': True,'density': True,'wcon': True,'wtuc': True,'wtrd': True,'wfir': True,'wser': True,'wmfg': True,'taxpc': True,'pctmin': True,'wfed': True,'wsta': True,'wloc': True,'mix': True,'pctymle': True,'_id': False}
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
 @app.route("/crime/projects")
-def donorschoose_projects():
+def crime_projects():
     connection = MongoClient(MONGODB_HOST, MONGODB_PORT)
     collection = connection[DBS_NAME][COLLECTION_NAME]
     projects = collection.find(projection=FIELDS)
@@ -66,12 +45,12 @@ def donorschoose_projects():
 
 
 
-proj_details=donorschoose_projects();
+proj_details=crime_projects();
 crime_data = pd.read_json(proj_details)
 crime_dataframe= pd.DataFrame(crime_data)
-testarray = ast.literal_eval(proj_details)
+# testarray = ast.literal_eval(proj_details)
 clusterObj= crime_data[['county','year','crmrte','prbarr','prbconv','prbpris','avgsen',
-						'density','wcon','wfir','wser','wmfg']]
+						'density','wcon','wtuc','wtrd','wfir','wser','wmfg','taxpc','pctmin','wfed','wsta','wloc','mix','pctymle']]
 clustervar=clusterObj.copy()
 
 clustervar['county']= preprocessing.scale(clustervar['county'].astype('float64'))
@@ -83,14 +62,23 @@ clustervar['prbpris']= preprocessing.scale(clustervar['prbpris'].astype('float64
 clustervar['avgsen']= preprocessing.scale(clustervar['avgsen'].astype('float64'))
 clustervar['density']= preprocessing.scale(clustervar['density'].astype('float64'))
 clustervar['wcon']= preprocessing.scale(clustervar['wcon'].astype('float64'))
+clustervar['wtuc']= preprocessing.scale(clustervar['wtuc'].astype('float64'))
+clustervar['wtrd']= preprocessing.scale(clustervar['wtrd'].astype('float64'))
 clustervar['wfir']= preprocessing.scale(clustervar['wfir'].astype('float64'))
 clustervar['wser']= preprocessing.scale(clustervar['wser'].astype('float64'))
 clustervar['wmfg']= preprocessing.scale(clustervar['wmfg'].astype('float64'))
+clustervar['taxpc']= preprocessing.scale(clustervar['taxpc'].astype('float64'))
+clustervar['pctmin']= preprocessing.scale(clustervar['pctmin'].astype('float64'))
+clustervar['wfed']= preprocessing.scale(clustervar['wfed'].astype('float64'))
+clustervar['wsta']= preprocessing.scale(clustervar['wsta'].astype('float64'))
+clustervar['wloc']= preprocessing.scale(clustervar['wloc'].astype('float64'))
+clustervar['mix']= preprocessing.scale(clustervar['mix'].astype('float64'))
+clustervar['pctymle']= preprocessing.scale(clustervar['pctymle'].astype('float64'))
 
 clus_train = clustervar
-print(clus_train)
+# print(clus_train)
 def findSuitableK():
-	clusters=range(1,7) 
+	clusters=range(1,9) 
 	meandist=[]
 	for k in clusters:
 	    model=KMeans(n_clusters=k)
@@ -102,7 +90,7 @@ def findSuitableK():
 	plt.xlabel('Number of clusters')
 	plt.ylabel('Average distance')
 	plt.title('Selecting k with the Elbow Method') # pick the fewest number of clusters that reduces the average distance    
-	# plt.show()
+	plt.show()
 
 findSuitableK()
 
@@ -147,21 +135,47 @@ def sampleClusters():
 
 sampled_dataFrame=sampleClusters()
 
-def find_centers(X, K):
-	oldmu = random.sample(testarray, 15)
-	mu = random.sample(testarray,15)
-	# print(mu)
-	while not has_converged(mu, oldmu):
-	        oldmu = mu
-	        print("this")
-	        # Assign all points in X to clusters
-	        clusters = cluster_points(testarray, mu)
-	        # Reevaluate centers
-	        mu = reevaluate_centers(oldmu, clusters)
-	# print(mu)         
-	# return(mu, clusters)    
+pca = PCA(n_components=21)
+pca.fit(sampled_dataFrame)
+existing_2d = pca.transform(sampled_dataFrame)
+# print(existing_2d)
+existing_df_2d = pd.DataFrame(existing_2d)
+existing_df_2d.index = sampled_dataFrame.index
+existing_df_2d.columns = ['PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9','PC10','PC11','PC12','PC13','PC14','PC15','PC16','PC17','PC18','PC19','PC20','PC21']
+# existing_df_2d.columns = ['PC1','PC2','PC3']
+existing_df_2d.head()
+# print(pca.get_covariance())
+print(pca.components_) 
+# print(pca.explained_variance_)
+# print(pca.explained_variance_ratio_.cumsum())
 
-find_centers(testarray,15)
+def screeplot(pca, standardised_values):
+    y = np.std(pca.transform(standardised_values), axis=0)**2
+    # print(y)
+    x = np.arange(len(y)) + 1
+    # print(x)
+    plt.plot(x, y, "o-") 
+    plt.xticks(x, ["PC"+str(i) for i in x], rotation=60)
+    plt.ylabel("Variance")
+    plt.show()
+
+screeplot(pca, sampled_dataFrame)    
+
+# def find_centers(X, K):
+# 	oldmu = random.sample(testarray, 15)
+# 	mu = random.sample(testarray,15)
+# 	# print(mu)
+# 	while not has_converged(mu, oldmu):
+# 	        oldmu = mu
+# 	        print("this")
+# 	        # Assign all points in X to clusters
+# 	        clusters = cluster_points(testarray, mu)
+# 	        # Reevaluate centers
+# 	        mu = reevaluate_centers(oldmu, clusters)
+# 	# print(mu)         
+# 	# return(mu, clusters)    
+
+# find_centers(testarray,15)
 
 
 if __name__ == "__main__":
