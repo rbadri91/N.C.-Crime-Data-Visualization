@@ -15,11 +15,9 @@ from scipy.spatial.distance import cdist
 import collections
 from collections import defaultdict
 from sklearn.decomposition import PCA
+import math
 
 app = Flask(__name__)
-
-
-
 
 MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
@@ -47,7 +45,7 @@ def crime_projects():
 
 proj_details=crime_projects();
 crime_data = pd.read_json(proj_details)
-crime_dataframe= pd.DataFrame(crime_data)
+print(crime_data)
 # testarray = ast.literal_eval(proj_details)
 clusterObj= crime_data[['county','year','crmrte','prbarr','prbconv','prbpris','avgsen',
 						'density','wcon','wtuc','wtrd','wfir','wser','wmfg','taxpc','pctmin','wfed','wsta','wloc','mix','pctymle']]
@@ -145,21 +143,31 @@ existing_df_2d.columns = ['PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9',
 # existing_df_2d.columns = ['PC1','PC2','PC3']
 existing_df_2d.head()
 # print(pca.get_covariance())
-print(pca.components_) 
+# print(pca.components_)  
+# print(pca.components_.T * math.sqrt(pca.explained_variance_))
 # print(pca.explained_variance_)
 # print(pca.explained_variance_ratio_.cumsum())
 
 def screeplot(pca, standardised_values):
     y = np.std(pca.transform(standardised_values), axis=0)**2
     # print(y)
-    x = np.arange(len(y)) + 1
+    x = np.arange(len(y)) + 1 
     # print(x)
     plt.plot(x, y, "o-") 
     plt.xticks(x, ["PC"+str(i) for i in x], rotation=60)
     plt.ylabel("Variance")
     plt.show()
+    return np.array(y),np.array(x)
+    # showScreeplot()
 
-screeplot(pca, sampled_dataFrame)    
+y,x =screeplot(pca, sampled_dataFrame)  
+
+@app.route("/crime/screeplot")
+def showScreeplot():
+	# print(y.tolist())
+	return render_template("screePlot.html",y=y.tolist(),x=x.tolist())   
+
+
 
 # def find_centers(X, K):
 # 	oldmu = random.sample(testarray, 15)
