@@ -16,6 +16,7 @@ from scipy.spatial.distance import cdist
 import collections
 from collections import defaultdict
 from sklearn.decomposition import PCA
+from sklearn.manifold import MDS
 import math
 
 app = Flask(__name__)
@@ -52,27 +53,27 @@ clusterObj= crime_data[['county','year','crmrte','prbarr','prbconv','prbpris','a
 						'density','wcon','wtuc','wtrd','wfir','wser','wmfg','taxpc','pctmin','wfed','wsta','wloc','mix','pctymle']]
 clustervar=clusterObj.copy() 
 
-# clustervar['county']= preprocessing.scale(clustervar['county'].astype('float64'))
-# clustervar['year']= preprocessing.scale(clustervar['year'].astype('float64'))
-# clustervar['crmrte']= preprocessing.scale(clustervar['crmrte'].astype('float64'))
-# clustervar['prbarr']= preprocessing.scale(clustervar['prbarr'].astype('float64'))
-# clustervar['prbconv']= preprocessing.scale(clustervar['prbconv'].astype('float64'))
-# clustervar['prbpris']= preprocessing.scale(clustervar['prbpris'].astype('float64'))
-# clustervar['avgsen']= preprocessing.scale(clustervar['avgsen'].astype('float64'))
-# clustervar['density']= preprocessing.scale(clustervar['density'].astype('float64'))
-# clustervar['wcon']= preprocessing.scale(clustervar['wcon'].astype('float64'))
-# clustervar['wtuc']= preprocessing.scale(clustervar['wtuc'].astype('float64'))
-# clustervar['wtrd']= preprocessing.scale(clustervar['wtrd'].astype('float64'))
-# clustervar['wfir']= preprocessing.scale(clustervar['wfir'].astype('float64'))
-# clustervar['wser']= preprocessing.scale(clustervar['wser'].astype('float64'))
-# clustervar['wmfg']= preprocessing.scale(clustervar['wmfg'].astype('float64'))
-# clustervar['taxpc']= preprocessing.scale(clustervar['taxpc'].astype('float64'))
-# clustervar['pctmin']= preprocessing.scale(clustervar['pctmin'].astype('float64'))
-# clustervar['wfed']= preprocessing.scale(clustervar['wfed'].astype('float64'))
-# clustervar['wsta']= preprocessing.scale(clustervar['wsta'].astype('float64'))
-# clustervar['wloc']= preprocessing.scale(clustervar['wloc'].astype('float64'))
-# clustervar['mix']= preprocessing.scale(clustervar['mix'].astype('float64'))
-# clustervar['pctymle']= preprocessing.scale(clustervar['pctymle'].astype('float64'))   
+clustervar['county']= preprocessing.scale(clustervar['county'].astype('float64'))
+clustervar['year']= preprocessing.scale(clustervar['year'].astype('float64'))
+clustervar['crmrte']= preprocessing.scale(clustervar['crmrte'].astype('float64'))
+clustervar['prbarr']= preprocessing.scale(clustervar['prbarr'].astype('float64'))
+clustervar['prbconv']= preprocessing.scale(clustervar['prbconv'].astype('float64'))
+clustervar['prbpris']= preprocessing.scale(clustervar['prbpris'].astype('float64'))
+clustervar['avgsen']= preprocessing.scale(clustervar['avgsen'].astype('float64'))
+clustervar['density']= preprocessing.scale(clustervar['density'].astype('float64'))
+clustervar['wcon']= preprocessing.scale(clustervar['wcon'].astype('float64'))
+clustervar['wtuc']= preprocessing.scale(clustervar['wtuc'].astype('float64'))
+clustervar['wtrd']= preprocessing.scale(clustervar['wtrd'].astype('float64'))
+clustervar['wfir']= preprocessing.scale(clustervar['wfir'].astype('float64'))
+clustervar['wser']= preprocessing.scale(clustervar['wser'].astype('float64'))
+clustervar['wmfg']= preprocessing.scale(clustervar['wmfg'].astype('float64'))
+clustervar['taxpc']= preprocessing.scale(clustervar['taxpc'].astype('float64'))
+clustervar['pctmin']= preprocessing.scale(clustervar['pctmin'].astype('float64'))
+clustervar['wfed']= preprocessing.scale(clustervar['wfed'].astype('float64'))
+clustervar['wsta']= preprocessing.scale(clustervar['wsta'].astype('float64'))
+clustervar['wloc']= preprocessing.scale(clustervar['wloc'].astype('float64'))
+clustervar['mix']= preprocessing.scale(clustervar['mix'].astype('float64'))
+clustervar['pctymle']= preprocessing.scale(clustervar['pctymle'].astype('float64'))   
 
 clus_train = clustervar
 print(clus_train.columns.values)
@@ -121,7 +122,6 @@ def sampleClusters():
 	# df= pd.DataFrame([['county','year','crmrte','prbarr','prbconv','prbpris','avgsen',
 	# 					'density','wcon','wfir','wser','wmfg']])
 	
-	count=0;
 	for i in range(0,3):
 		length = len(cluster_dict[i])
 		cluster_sample[i]=random.sample(cluster_dict[i],length//3)
@@ -129,21 +129,22 @@ def sampleClusters():
 			test= clus_train.iloc[[k]]
 			df=df.append(clus_train.iloc[[k]],ignore_index=True)
 			# df.iloc[[count]] = clus_train.iloc[[k]]
-			count =count +1
 	return df
 
 sampled_dataFrame=sampleClusters()
 
 def randomSample():
 	# print(len(clus_train))
-	newClusterTrain= random.sample(crime_data.index,len(clus_train)//3)
+	newClusterTrain= crime_data.sample(n=len(clus_train)//3)
+	# newClusterTrain= random.sample(crime_data.index,len(clus_train)//3)
 	print(newClusterTrain)
+	print("Len:",len(newClusterTrain))
 	return newClusterTrain
 
-# newClusterFrame=randomSample()	
+randomSampledClusterFrame=randomSample()	
 
 pca = PCA(n_components=21)
-pca.fit(sampled_dataFrame)	
+pca.fit(sampled_dataFrame)	 
 # print(existing_2d)
 # existing_df_2d = pd.DataFrame(existing_2d)
 # existing_df_2d.index = sampled_dataFrame.index
@@ -158,6 +159,15 @@ print(loadings[1])
 # print(pca.explained_variance_)
 # print(pca.explained_variance_ratio_.cumsum())
 
+def pcaRandomSample():
+	r_pca = PCA(n_components=21)
+	r_pca.fit(randomSampledClusterFrame)
+	r_loadings=r_pca.components_
+	return r_pca,r_loadings
+
+random_pca,Random_loadings =pcaRandomSample()
+
+
 def screeplot(pca, standardised_values):
     y = np.std(pca.transform(standardised_values), axis=0)**2
     print("y here:",y) 
@@ -170,25 +180,30 @@ def screeplot(pca, standardised_values):
     return np.array(y),np.array(x)
     # showScreeplot()
 
-y,x =screeplot(pca, sampled_dataFrame)   
+y,x =screeplot(pca, sampled_dataFrame) 
+y_random,x_random =screeplot(random_pca, Random_loadings)   
 
 @app.route("/crime/screeplot")
 def showScreeplot():
-	# print(y.tolist()) 
 	return render_template("screePlot.html",y=y.tolist(),x=x.tolist()) 
 
+@app.route("/crime/randomscreeplot")
+def showScreeplot_random():
+	return render_template("screePlot.html",y=y_random.tolist(),x=x_random.tolist()) 
+
+
 def squaredLoadings():
-	w, h = 8, 21;
+	w, h = 3, 21;
 	squaredLoadings = [0 for y in range(h)] 
 	for i in range(len(loadings)):
 		sum=0
-		for j in range(0,8):
-			sum = sum + loadings[i][j] **2
+		for j in range(3): 
+			sum = sum + loadings[j][i] **2
 		squaredLoadings[i]=sum	
 	return squaredLoadings
 
 sumSquareLoadings=squaredLoadings()
-
+print("sumSquareLoadings:",sumSquareLoadings)
 
 @app.route("/crime/squaredLoadings")
 def showSqureloadingsPlot():
@@ -229,6 +244,19 @@ def showScatterPlot():
 	yVal=np.around(loadings[1], decimals=4)
 	return render_template("scatterPlot.html",y=yVal.tolist(),x=xVal.tolist())
 
+def MDS_DimReduction():
+	mdsData = MDS(n_components=2,dissimilarity='euclidean')
+	mdsData.fit(sampled_dataFrame)
+	# print("mds loadings:",mdsData.embedding_)
+	return mdsData.embedding_
+
+@app.route("/crime/MDSscatterPlot")
+def MDS_ScatterPlot():
+	return render_template("scatterPlotMDS.html",dataVal=mds_embeddings.tolist())
+
+	
+mds_embeddings=MDS_DimReduction()
+print("mds list:",mds_embeddings.tolist())
 
 # def find_centers(X, K):
 # 	oldmu = random.sample(testarray, 15)
