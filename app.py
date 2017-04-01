@@ -13,6 +13,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pylab as plt
 from sklearn.preprocessing import StandardScaler
 from scipy.spatial.distance import cdist
+from scipy.spatial.distance import pdist
 import collections
 from collections import defaultdict
 from sklearn.decomposition import PCA
@@ -76,7 +77,6 @@ clustervar['mix']= preprocessing.scale(clustervar['mix'].astype('float64'))
 clustervar['pctymle']= preprocessing.scale(clustervar['pctymle'].astype('float64'))   
 
 clus_train = clustervar
-print(clus_train.columns.values)
 def findSuitableK():
 	clusters=range(1,9) 
 	meandist=[]
@@ -137,27 +137,15 @@ def randomSample():
 	# print(len(clus_train))
 	newClusterTrain= crime_data.sample(n=len(clus_train)//3)
 	# newClusterTrain= random.sample(crime_data.index,len(clus_train)//3)
-	print(newClusterTrain)
-	print("Len:",len(newClusterTrain))
 	return newClusterTrain
 
 randomSampledClusterFrame=randomSample()	
 
 pca = PCA(n_components=21)
-pca.fit(sampled_dataFrame)	 
-# print(existing_2d)
-# existing_df_2d = pd.DataFrame(existing_2d)
-# existing_df_2d.index = sampled_dataFrame.index
-# existing_df_2d.columns = ['PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9','PC10','PC11','PC12','PC13','PC14','PC15','PC16','PC17','PC18','PC19','PC20','PC21']
-# existing_df_2d.columns = ['PC1','PC2','PC3']
-# existing_df_2d.head()
-# print(pca.get_covariance())
+pca.fit(sampled_dataFrame)
 loadings=pca.components_ 
 print(loadings[0])
 print(loadings[1])
-# print(pca.components_.T * math.sqrt(pca.explained_variance_))
-# print(pca.explained_variance_)
-# print(pca.explained_variance_ratio_.cumsum())
 
 def pcaRandomSample():
 	r_pca = PCA(n_components=21)
@@ -170,7 +158,6 @@ random_pca,Random_loadings =pcaRandomSample()
 
 def screeplot(pca, standardised_values):
     y = np.std(pca.transform(standardised_values), axis=0)**2
-    print("y here:",y) 
     x = np.arange(len(y)) + 1 
     # print(x)
     plt.plot(x, y, "o-") 
@@ -203,40 +190,18 @@ def squaredLoadings():
 	return squaredLoadings
 
 sumSquareLoadings=squaredLoadings()
-print("sumSquareLoadings:",sumSquareLoadings)
 
 @app.route("/crime/squaredLoadings")
 def showSqureloadingsPlot():
 	sortedSumSquareLoadings=sorted(sumSquareLoadings,reverse=True)
-	print(type(sortedSumSquareLoadings))
 	length= len(sortedSumSquareLoadings)
 	columns=[0 for y in range(length)] 
 	index=0
 	for i in sortedSumSquareLoadings: 
-		print(i)
 		columns[index]=clus_train.columns.values[sumSquareLoadings.index(i)]
 		index =index+1
-	print(columns)
 	return render_template("squaredloadings.html",y=sortedSumSquareLoadings,x=json.dumps(columns))
 
-def scatterPlot():
-	X_std = StandardScaler().fit_transform(sampled_dataFrame)
-	pcaComp= PCA(n_components=2)
-	yComp = pcaComp.fit_transform(X_std)
-	with plt.style.context('seaborn-whitegrid'):
-	    plt.figure(figsize=(6, 4))
-	    for lab, col in zip(('Cluster1', 'Cluster2', 'Cluster3'),
-	                        ('blue', 'red', 'green')):
-	        plt.scatter(yComp[y==lab, 0],
-	                    yComp[y==lab, 1],
-	                    label=lab,
-	                    c=col)
-	    plt.xlabel('Principal Component 1')
-	    plt.ylabel('Principal Component 2')
-	    plt.tight_layout()
-	    plt.show()
-
-# scatterPlot()
 
 @app.route("/crime/scatterPlot")
 def showScatterPlot():
@@ -250,13 +215,29 @@ def MDS_DimReduction():
 	# print("mds loadings:",mdsData.embedding_)
 	return mdsData.embedding_
 
+def MDS_DimReduction_Correlation():
+	mdsData = MDS(n_components=2,dissimilarity='precomputed')
+	mdsData.fit(pdistPrecomputed)
+	# print("mds loadings:",mdsData.embedding_)
+	return mdsData.embedding_	
+
+def precomputed_matrix():
+	return sampled_dataFrame.corr(method='pearson')
+
+pdistPrecomputed=precomputed_matrix()
+print("precomputed:",pdistPrecomputed)
+
 @app.route("/crime/MDSscatterPlot")
 def MDS_ScatterPlot():
 	return render_template("scatterPlotMDS.html",dataVal=mds_embeddings.tolist())
 
+@app.route("/crime/MDSCorrelationscatterPlot")
+def MDS_ScatterPlot_Correlation():
+	return render_template("scatterPlotMDS.html",dataVal=mds_embeddings_correlation.tolist())	
+
 	
 mds_embeddings=MDS_DimReduction()
-print("mds list:",mds_embeddings.tolist())
+mds_embeddings_correlation=MDS_DimReduction_Correlation()
 
 # def find_centers(X, K):
 # 	oldmu = random.sample(testarray, 15)

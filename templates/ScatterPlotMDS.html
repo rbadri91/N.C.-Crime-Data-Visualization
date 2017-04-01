@@ -28,7 +28,15 @@ body {
   pointer-events: none;
 }
 </style>
- <svg width="960" height="500" style="margin-top: 20px"></svg>
+<h1 class= "text-center">Visualization Project 2</h1>
+<div style="height:100%" class="text-center">
+<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/screeplot'">Scree Plot</button> 
+<button onclick="document.location.href='/crime/squaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
+</div>
+ <svg width="960" height="400" style="margin-top: 20px"></svg>
   <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
   <div id="tooltip" style="opacity: 0">
     <strong>Eigen Values:</strong><span id="value">100</span></p>
@@ -37,7 +45,7 @@ body {
 var dataSet={{dataVal}}
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 400 - margin.top - margin.bottom;
 
 var svg = d3.select("svg")
     .attr("width", width + margin.left + margin.right)
