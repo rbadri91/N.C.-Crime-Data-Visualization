@@ -45,20 +45,20 @@ body {
 }
 </style>
 <h1 class= "text-center">Visualization Project 2</h1>
-<h2 class= "text-center">Plot For Stratified Sampling</h2>
+<h2 class= "text-center">Plot For Random Sampling</h2>
 <div style="height:100%" class="text-center">
-<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/screeplot'">Scree Plot</button> 
-<button onclick="document.location.href='/crime/squaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterMatrix'" style="background-color: #404040">Scatter Matrix</button>
+<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/randomscreeplot'">Scree Plot</button> 
+<button onclick="document.location.href='/crime/randomsquaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomscatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSRandomscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSRandomCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomScatterMatrix'" style="background-color: #404040">Scatter Matrix</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/'" style="background-color: #8C9263">Home</button>
 </div>
  <svg width="960" height="400" style="margin-top: 20px"></svg>
   <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
   <div id="tooltip" style="opacity: 0">
-    <strong>Point Coordinates:</strong><span id="value">100</span></p>
+    <strong>Eigen Values:</strong><span id="value">100</span></p>
   </div>
 <script>
 var dataSet={{dataVal}}
@@ -75,9 +75,9 @@ var svg = d3.select("svg")
 var xValue = function(d) { return d[0];}
 var yValue = function(d) { return d[1];}    
 
-var tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+// var tooltip = d3.select("body").append("div")
+//     .attr("class", "tooltip")
+//     .style("opacity", 0);
 var xScale = d3.scale.linear()
               .domain([d3.min(dataSet, xValue)-1,d3.max(dataSet, xValue)+1])
               .range([ 0, width ]);
@@ -145,9 +145,9 @@ svg.selectAll(".dot")
        });
 svg.selectAll(".dot")
 	 .on("mouseover", function(d,i) {
-          d3.select(this).attr("r",5);
+        d3.select(this).attr("r",5);
          d3.select(this).attr("fill","red");
-         d3.select("#tooltip")
+          d3.select("#tooltip")
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY + "px")
           .style("opacity", 1)

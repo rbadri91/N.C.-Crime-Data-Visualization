@@ -12,13 +12,49 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.3/dc.min.js"></script>
   <script src="./static/lib/js/Queue.js"></script>
   <h1 class= "text-center">Visualization Project 2</h1>
-<div style="height:100%" class="text-center">
+<div id ="selectionRow" class ="row text-center">
+<div class="col-sm-4"></div>
+<div class="col-sm-4 center-block"><span style="font-family: 'Arial Black'">Select the Type of sampling:</span>
+<select id ="selectData" class="form-control input-xxlarge" style ="display: inline" data-style="btn-primary">
+<option value = 1>Random Sampling</option>
+<option value = 2>Stratified Sampling</option>
+</select></div> 
+</div> 
+<br>
+<br>
+<div id="stratifiedSampling" style="height:100%;display:none" class="text-center">
+<p>Select the required Option for Stratified Sampling</p>
 <button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/screeplot'">Scree Plot</button> 
 <button onclick="document.location.href='/crime/squaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
 </div>
+
+<div id="RandomSampling" style="height:100%;" class="text-center">
+<p>Select the required Option for Random Sampling</p>
+<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/randomscreeplot'">Scree Plot</button> 
+<button onclick="document.location.href='/crime/randomsquaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomscatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSRandomscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSRandomCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
+</div>
+</div>
+<script type="text/javascript">
+		$(function() {
+		var select = d3.select("#selectData").on("change", function() {
+			var data = d3.select(this).property('value');
+			console.log("it comes here");
+			if(data==1){
+				document.getElementById("RandomSampling").style.display="block";
+				document.getElementById("stratifiedSampling").style.display="none";
+			}else{
+				document.getElementById("stratifiedSampling").style.display="block";
+				document.getElementById("RandomSampling").style.display="none";
+			} 
+		});
+	});
+</script>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/keen-js/3.4.1/keen.min.js"></script>

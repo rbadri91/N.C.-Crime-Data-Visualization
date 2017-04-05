@@ -13,7 +13,7 @@ var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 var xScale = d3.scale.linear()
-              .domain([d3.min(xVal), 0.1])
+              .domain([d3.min(xVal), d3.max(xVal)])
               .range([ 0, width ]);
     
 var yScale = d3.scale.linear()
@@ -79,7 +79,8 @@ svg.selectAll(".dot")
        });
 svg.selectAll(".dot")
 	 .on("mouseover", function(d,i) {
-      		console.log(d[0]);
+        d3.select("this").attr("r",5);
+         d3.select("this").attr("fill","red");
           tooltip.transition()
                .duration(200)
                .style("opacity", .9);
@@ -89,6 +90,8 @@ svg.selectAll(".dot")
                .style("top", (d3.event.pageY - 28) + "px");
       })
       .on("mouseout", function(d) {
+         d3.select("this").attr("r",3);
+         d3.select("this").attr("fill","black");
           tooltip.transition()
                .duration(500)
                .style("opacity", 0);

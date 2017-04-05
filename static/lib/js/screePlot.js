@@ -79,6 +79,8 @@
 		return "rgb(0, 0, " + 255 + ")";
    });
    bar.on("mouseover", function(d){
+   			d3.select(this)
+              .attr("fill", "orange");
    			d3.select("#tooltip")
 					.style("left", d3.event.pageX + "px")
 					.style("top", d3.event.pageY + "px")
@@ -88,6 +90,10 @@
 					.text(d);
    })
    .on("mouseout", function() {
+   				d3.select(this)
+              .attr("fill", function(d) {
+                     return "rgb(0, 0, " + 255 + ")";
+                   })
 				d3.select("#tooltip")
 					.style("opacity", 0);
 	});	
