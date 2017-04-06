@@ -23,21 +23,23 @@
 <br>
 <br>
 <div id="stratifiedSampling" style="height:100%;display:none" class="text-center">
-<p>Select the required Option for Stratified Sampling</p>
+<p style="font-family: 'Arial Black'">Select the required Option for Stratified Sampling</p>
 <button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/screeplot'">Scree Plot</button> 
 <button onclick="document.location.href='/crime/squaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterMatrix'" style="background-color: #8C9263">Scatter Matrix</button>
 </div>
 
 <div id="RandomSampling" style="height:100%;" class="text-center">
-<p>Select the required Option for Random Sampling</p>
+<p style="font-family: 'Arial Black'">Select the required Option for Random Sampling</p>
 <button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/randomscreeplot'">Scree Plot</button> 
 <button onclick="document.location.href='/crime/randomsquaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomscatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick=" document.location.href='/crime/MDSRandomscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
 <button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSRandomCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
+<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomScatterMatrix'" style="background-color: #8C9263">Scatter Matrix</button>
 </div>
 </div>
 <script type="text/javascript">
@@ -55,6 +57,52 @@
 		});
 	});
 </script>
+
+<script type="text/javascript">
+    function handleGo(){
+      var selectSample = document.getElementById("selectSampling").value;
+      var selectPlot = document.getElementById("selectPlot").value;
+      if(selectPlot==7){
+              document.location.href='/';
+      } 
+      if(selectSample==2){
+           if(selectPlot==1){
+              document.location.href='/crime/squaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/scatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/scatterMatrix';
+            }
+            else if(selectPlot==6){
+              document.location.href='/crime/screeplot';
+            }
+      }else {
+            if(selectPlot==1){
+              document.location.href='/crime/randomsquaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/randomscatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSRandomscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSRandomCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/randomScatterMatrix';
+            }else if(selectPlot==6){
+              document.location.href='/crime/randomscreeplot';
+            }
+      }
+    }
+</script> 
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/keen-js/3.4.1/keen.min.js"></script>

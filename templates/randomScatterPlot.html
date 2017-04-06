@@ -21,27 +21,62 @@ body {
   stroke: #000;
 }
 
-.tooltip {
-  position: absolute;
-  width: 200px;
-  height: 28px;
-  pointer-events: none;
+
+#tooltip {
+    position: absolute;
+    width: 400px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -mox-box-shadow: 4px 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rbga(0, 0, 0, 0.4) pointer-events: none;
+}
+#tooltip.hidden {
+    opacity: 0;
+}
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
 }
 </style>
 <h1 class= "text-center">Visualization Project 2</h1>
-<h2 class= "text-center">Plot For Random Sampling</h2>
+<h3 class= "text-center">Visiulaizing Scatter Plot for Random Sampling</h3>
 <div style="height:100%" class="text-center">
-<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/randomscreeplot'">Scree Plot</button> 
-<button onclick="document.location.href='/crime/randomsquaredLoadings'" class="btn btn-primary btn-md btn-lg" style="background-color: #FFC65D">Squared Loadings</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSRandomscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSRandomCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/randomScatterMatrix'" style="background-color: #404040">Scatter Matrix</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/'" style="background-color: #8C9263">Home</button>
+<div id ="selectionHeadings" class ="row text-center">
+  <div class="col-sm-5 center-block text-center"><span style="font-size:120%;font-family: 'Arial Black'">Select the Type of sampling:</span></div>
+<div class="col-sm-5 center-block"><span style="font-size:120%;font-family: 'Arial Black'">Select the Type Of Plot:</span></div>
+</div>
+<div id ="selectionRow" class ="row text-center">
+<div class="col-sm-5 center-block text-center">
+<select id ="selectSampling" class="form-control input-xxlarge" style ="display: inline" data-style="btn-primary">
+<option value = 1>Random Sampling</option>
+<option value = 2>Stratified Sampling</option>
+</select></div> 
+<div class="col-sm-5 center-block">
+<select id ="selectPlot" class="form-control input-xxlarge" data-style="btn-primary">
+<option value = 1>Squared Loadings</option>
+<option value = 2 selected=True>Scatter Plot</option>
+<option value = 3>MDS ScatterPlot</option>
+<option value = 4>MDS Correlation ScatterPlot</option>
+<option value = 5>Scatter Matrix</option>
+<option value = 6 >Scree Plot</option>
+<option value = 7>Home</option>
+</select></div> 
+<div class="col-sm-2 center-block"><button class="btn btn-primary" onclick="handleGo()">GO</button></div>
+</div>
 </div>
  <svg width="960" height="400" style="margin-top: 20px"></svg>
   <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
-  <div id="tooltip" style="opacity: 0">
-    <strong>Eigen Values:</strong><span id="value">100</span></p>
+  <<div id="tooltip" style="opacity: 0">
+    <strong>Pricipal Component1:</strong><span id="value1">100</span>
+    <br>
+    <strong>Pricipal Component2:</strong><span id="value2">100</span></p>
   </div>
 <script>
 var dataSet={{dataVal}}
@@ -103,7 +138,7 @@ svg.append("g")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Principal COmponent 2");               
+      .text("Principal Component 2");               
 
 svg.selectAll(".dot")
       .data(dataSet)
@@ -126,24 +161,78 @@ svg.selectAll(".dot")
             d3.select(this)  // 'this' means the current element
              .transition()
              .duration(500)
-             .attr("fill", "black")  // Change color
-             .attr("r", 2);  // Change radius
+             .attr("fill", "blue")  // Change color
+             .attr("r", 2.5);  // Change radius
        });
 svg.selectAll(".dot")
    .on("mouseover", function(d,i) {
-          console.log(d[0]);
-          tooltip.transition()
-               .duration(200)
-               .style("opacity", .9);
-          tooltip.html( "<br/> (" + d[0] 
-          + ", " + d[1] + ")")
-               .style("left", (d3.event.pageX + 5) + "px")
-               .style("top", (d3.event.pageY - 28) + "px");
+        d3.select(this).attr("r",5);
+         d3.select(this).attr("fill","red");
+
+          d3.select("#tooltip")
+          .transition()
+          .duration(500)
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY + "px")
+          .style("opacity", 1)
+          .attr("zIndex", 10)
+          .select("#value1")
+          .text(d[0]);
+          d3.select("#tooltip")
+          .select("#value2")
+          .text(d[1]);
       })
       .on("mouseout", function(d) {
-          tooltip.transition()
-               .duration(500)
-               .style("opacity", 0);
+        d3.select(this).attr("r",2);
+         d3.select(this).attr("fill","blue");
+         d3.select("#tooltip")
+         .transition()
+         .duration(500)
+          .style("opacity", 0);
       });
 </script>       
-<script src="../static/lib/js/scatterPlot.js"></script            
+<script type="text/javascript">
+    function handleGo(){
+      var selectSample = document.getElementById("selectSampling").value;
+      var selectPlot = document.getElementById("selectPlot").value;
+      if(selectPlot==7){
+              document.location.href='/';
+      } 
+      if(selectSample==2){
+           if(selectPlot==1){
+              document.location.href='/crime/squaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/scatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/scatterMatrix';
+            }
+            else if(selectPlot==6){
+              document.location.href='/crime/screeplot';
+            }
+      }else {
+            if(selectPlot==1){
+              document.location.href='/crime/randomsquaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/randomscatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSRandomscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSRandomCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/randomScatterMatrix';
+            }else if(selectPlot==6){
+              document.location.href='/crime/randomscreeplot';
+            }
+      }
+    }
+</script>             

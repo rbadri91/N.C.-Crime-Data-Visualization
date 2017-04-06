@@ -65,7 +65,7 @@
 
    bar.transition()
       .duration(1000).attr("x", function(d, i) {
-		return xScale(i)+35;
+		return xScale(i)+45;
    })
    .attr("y", function(d) {
    	console.log("d here:")

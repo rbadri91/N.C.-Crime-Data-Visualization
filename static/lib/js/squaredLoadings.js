@@ -71,7 +71,7 @@
    bar.transition()
       .duration(1000)
    .attr("x", function(d, i) {
-		return xScale(xVal[i])+35;
+		return xScale(xVal[i])+45;
    })
    .attr("y", function(d) {
 		return yScale(d)+margin.top;

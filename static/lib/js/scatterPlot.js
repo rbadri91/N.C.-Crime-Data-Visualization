@@ -74,13 +74,12 @@ svg.selectAll(".dot")
             d3.select(this) 
              .transition()
              .duration(500)
-             .attr("fill", "black")  
+             .attr("fill", "blue")  
              .attr("r", 2); 
        });
 svg.selectAll(".dot")
 	 .on("mouseover", function(d,i) {
-        d3.select("this").attr("r",5);
-         d3.select("this").attr("fill","red");
+        
           tooltip.transition()
                .duration(200)
                .style("opacity", .9);
@@ -91,7 +90,7 @@ svg.selectAll(".dot")
       })
       .on("mouseout", function(d) {
          d3.select("this").attr("r",3);
-         d3.select("this").attr("fill","black");
+         d3.select("this").attr("fill","blue");
           tooltip.transition()
                .duration(500)
                .style("opacity", 0);

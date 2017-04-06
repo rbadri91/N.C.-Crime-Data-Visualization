@@ -13,7 +13,7 @@
 }
 #tooltip {
     position: absolute;
-    width: 200px;
+    width: 300px;
     height: auto;
     padding: 10px;
     background-color: white;
@@ -44,18 +44,80 @@ console.log("y length:",yVal.length)
 
 </script>
 <h1 class= "text-center">Visualization Project 2</h1>
-<h2 class= "text-center">Plot For Stratified Sampling</h2>
+<h2 class= "text-center">Visualization of Square Loadings for Stratified Sampling</h2>
 <div style="height:100%" class="text-center">
-<button class="btn btn-primary btn-md btn-lg" style="background-color: #F16745" onclick="document.location.href='/crime/screeplot'">Scree Plot</button> 
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/scatterPlot'" style="background-color: #7BC8A4">Scatter Plot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSscatterPlot'" style="background-color: #4CC3D9 ">MDS ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/crime/MDSCorrelationscatterPlot'" style="background-color: #93648D">MDS Correlation ScatterPlot</button>
-<button class="btn btn-primary btn-md btn-lg" onclick="document.location.href='/'" style="background-color: #8C9263">Home</button>
+<div id ="selectionHeadings" class ="row text-center">
+  <div class="col-sm-5 center-block text-center"><span style="font-family: 'Arial Black'">Select the Type of sampling:</span></div>
+<div class="col-sm-5 center-block"><span style="font-family: 'Arial Black'">Select the Type Of Plot:</span></div>
+</div>
+<div id ="selectionRow" class ="row text-center">
+<div class="col-sm-5 center-block text-center">
+<select id ="selectSampling" class="form-control input-xxlarge" style ="display: inline" data-style="btn-primary">
+<option value = 1>Random Sampling</option>
+<option value = 2>Stratified Sampling</option>
+</select></div> 
+<div class="col-sm-5 center-block">
+<select id ="selectPlot" class="form-control input-xxlarge" data-style="btn-primary">
+<option value = 1 selected=True>Squared Loadings</option>
+<option value = 2 >Scatter Plot</option>
+<option value = 3>MDS ScatterPlot</option>
+<option value = 4>MDS Correlation ScatterPlot</option>
+<option value = 5>Scatter Matrix</option>
+<option value = 6>Scree Plot</option>
+<option value = 7>Home</option>
+</select></div> 
+<div class="col-sm-2 center-block"><button class="btn btn-primary" onclick="handleGo()">GO</button></div>
+</div>
 </div>
  <svg width="1160" height="400" style="margin-top: 20px"></svg>
- <hr style="position: absolute;top:63%; border:1px dashed crimson;width:100%">
+ <hr style="position: absolute;top:71%; border:1px dashed crimson;width:100%">
   <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
   <div id="tooltip" style="opacity: 0">
-    <strong>Eigen Values:</strong><span id="value">100</span></p>
+    <strong>Square Loadings:</strong><span id="value">100</span></p>
   </div>
-<script src="../static/lib/js/squaredLoadings.js"></script>    
+<script src="../static/lib/js/squaredLoadings.js"></script>
+<script type="text/javascript">
+    function handleGo(){
+      var selectSample = document.getElementById("selectSampling").value;
+      var selectPlot = document.getElementById("selectPlot").value;
+      if(selectPlot==7){
+              document.location.href='/';
+      } 
+      if(selectSample==2){
+           if(selectPlot==1){
+              document.location.href='/crime/squaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/scatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/scatterMatrix';
+            }
+            else if(selectPlot==6){
+              document.location.href='/crime/screeplot';
+            }
+      }else {
+            if(selectPlot==1){
+              document.location.href='/crime/randomsquaredLoadings';
+            }else if(selectPlot==2){
+              document.location.href='/crime/randomscatterPlot';
+            }
+            else if(selectPlot==3){
+              document.location.href='/crime/MDSRandomscatterPlot';
+            }
+            else if(selectPlot==4){
+              document.location.href='/crime/MDSRandomCorrelationscatterPlot';
+            }
+            else if(selectPlot==5){
+              document.location.href='/crime/randomScatterMatrix';
+            }else if(selectPlot==6){
+              document.location.href='/crime/randomscreeplot';
+            }
+      }
+    }
+</script>       
